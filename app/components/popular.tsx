@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
 export default function Popular() {
-  const [showAll, setShowAll] = useState(false);
   const initialDisplayCount = 5; // Change this number to show different initial count
 
   const allBooks = [
@@ -105,7 +102,7 @@ export default function Popular() {
     }
   ];
 
-  const displayedBooks = showAll ? allBooks : allBooks.slice(0, initialDisplayCount);
+  const displayedBooks = allBooks.slice(0, initialDisplayCount);
   const hasMoreBooks = allBooks.length > initialDisplayCount;
 
   return (
@@ -160,29 +157,18 @@ export default function Popular() {
           ))}
         </div>
 
-        {/* Show More / Show Less Button */}
+        {/* View All Button */}
         {hasMoreBooks && (
           <div className="show-more-container">
-            <button 
+            <a 
+              href="/popular"
               className="show-more-btn"
-              onClick={() => setShowAll(!showAll)}
             >
-              {showAll ? (
-                <>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 13L5 8h10l-5 5z" fill="currentColor"/>
-                  </svg>
-                  Show Less
-                </>
-              ) : (
-                <>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 7L5 12h10L10 7z" fill="currentColor"/>
-                  </svg>
-                  Show More ({allBooks.length - initialDisplayCount} more books)
-                </>
-              )}
-            </button>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 7L5 12h10L10 7z" fill="currentColor"/>
+              </svg>
+              View All Books ({allBooks.length} total)
+            </a>
           </div>
         )}
       </div>
@@ -346,7 +332,7 @@ export default function Popular() {
           color: #000;
         }
 
-        /* Show More Button */
+        /* View All Button */
         .show-more-container {
           display: flex;
           justify-content: center;
@@ -369,6 +355,7 @@ export default function Popular() {
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
+          text-decoration: none;
         }
 
         .show-more-btn::before {

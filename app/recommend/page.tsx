@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Book = {
@@ -12,10 +11,7 @@ type Book = {
   downloadUrl: string;
 };
 
-export default function Recommend() {
-  const router = useRouter();
-  const initialDisplayCount = 5;
-
+export default function RecommendPage() {
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,25 +28,33 @@ export default function Recommend() {
       });
   }, []);
 
-  const displayedBooks = allBooks.slice(0, initialDisplayCount);
-  const hasMoreBooks = allBooks.length > initialDisplayCount;
-
   return (
-    <section className="recommend-section">
+    <main className="recommend-page">
       <div className="container">
-        <header className="section-header">
-          <span className="section-tag">RECOMMENDED</span>
-          <h2 className="section-title">Handpicked for you</h2>
-          <p className="section-description">
-            Curated recommendations based on trending topics and student interests.
-          </p>
+        {/* Header */}
+        <header className="page-header">
+          <a href="/" className="back-link">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12 4L6 10l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            Back to Home
+          </a>
+
+          <div className="header-content">
+            <span className="section-tag">RECOMMENDED BOOKS</span>
+            <h1 className="page-title">All Recommended Books</h1>
+            <p className="page-description">
+              Browse our curated collection of {allBooks.length} handpicked books recommended for university students.
+            </p>
+          </div>
         </header>
 
+        {/* Books Grid */}
         {loading ? (
-          <p style={{ color: "#9a9a9a" }}>Loading books...</p>
+          <p style={{ color: "#9a9a9a", fontSize: "1.1rem" }}>Loading books...</p>
         ) : (
           <div className="books-grid">
-            {displayedBooks.map((book) => (
+            {allBooks.map((book) => (
               <div className="book-card" key={book.id}>
                 <div className="card-inner">
                   <div className="book-cover">
@@ -75,26 +79,20 @@ export default function Recommend() {
             ))}
           </div>
         )}
-
-        {hasMoreBooks && (
-          <div className="show-more-container">
-            <button className="show-more-btn" onClick={() => router.push("/recommend")}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 7L5 12h10L10 7z" fill="currentColor"/>
-              </svg>
-              View More ({allBooks.length - initialDisplayCount} more books)
-            </button>
-          </div>
-        )}
       </div>
 
       <style jsx>{`
-        .recommend-section { background: #000; padding: 6rem 2rem; }
+        .recommend-page { background: #000; min-height: 100vh; padding: 4rem 2rem 6rem; }
         .container { max-width: 1400px; margin: 0 auto; }
-        .section-header { max-width: 640px; margin-bottom: 4rem; }
-        .section-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 1.5px; font-weight: 600; color: #ffb000; margin-bottom: 0.75rem; }
-        .section-title { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 600; color: #fff; line-height: 1.25; margin-bottom: 1rem; }
-        .section-description { font-size: 1.05rem; color: #9a9a9a; line-height: 1.7; }
+        .page-header { margin-bottom: 4rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #ffb000; text-decoration: none; font-size: 0.95rem; font-weight: 500; margin-bottom: 2rem; transition: all 0.25s ease; }
+        .back-link:hover { gap: 0.75rem; color: #ffc233; }
+        .back-link svg { transition: transform 0.25s ease; }
+        .back-link:hover svg { transform: translateX(-4px); }
+        .header-content { max-width: 700px; }
+        .section-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 1.5px; font-weight: 600; color: #ffb000; margin-bottom: 1rem; }
+        .page-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 1.25rem; }
+        .page-description { font-size: 1.1rem; color: #9a9a9a; line-height: 1.7; }
         .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
         .book-card { background: #0a0a0a; border: 2px solid #1a1a1a; border-radius: 12px; overflow: hidden; transition: all 0.3s ease; cursor: pointer; }
         .book-card:hover { border-color: #ffb000; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(255, 176, 0, 0.2); }
@@ -109,18 +107,15 @@ export default function Recommend() {
         .book-author { font-size: 0.9rem; color: #ffb000; margin-bottom: auto; }
         .download-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: transparent; color: #ffb000; border: 1px solid #ffb000; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; text-decoration: none; }
         .download-btn:hover { background: #ffb000; color: #000; }
-        .show-more-container { display: flex; justify-content: center; margin-top: 3rem; }
-        .show-more-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: transparent; color: #ffb000; border: 2px solid #ffb000; border-radius: 10px; padding: 1rem 2.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .show-more-btn:hover { color: #000; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255, 176, 0, 0.3); }
         @media (max-width: 768px) {
-          .recommend-section { padding: 4rem 1.5rem; }
+          .recommend-page { padding: 2rem 1.5rem 4rem; }
+          .page-header { margin-bottom: 3rem; }
           .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.25rem; }
           .book-info { padding: 1rem; }
           .book-title { font-size: 0.95rem; }
           .book-author { font-size: 0.8rem; }
-          .show-more-btn { padding: 0.875rem 2rem; font-size: 0.9rem; }
         }
       `}</style>
-    </section>
+    </main>
   );
 }
