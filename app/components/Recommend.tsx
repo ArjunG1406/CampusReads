@@ -15,21 +15,14 @@ type Book = {
 export default function Recommend() {
   const router = useRouter();
   const initialDisplayCount = 5;
-
   const [allBooks, setAllBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/recommended")
+    fetch("/api/recommended")
       .then((res) => res.json())
-      .then((data) => {
-        setAllBooks(data.books);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch recommended books:", err);
-        setLoading(false);
-      });
+      .then((data) => { setAllBooks(data.books); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   const displayedBooks = allBooks.slice(0, initialDisplayCount);
@@ -41,9 +34,7 @@ export default function Recommend() {
         <header className="section-header">
           <span className="section-tag">RECOMMENDED</span>
           <h2 className="section-title">Handpicked for you</h2>
-          <p className="section-description">
-            Curated recommendations based on trending topics and student interests.
-          </p>
+          <p className="section-description">Curated recommendations based on trending topics and student interests.</p>
         </header>
 
         {loading ? (
@@ -110,15 +101,14 @@ export default function Recommend() {
         .download-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: transparent; color: #ffb000; border: 1px solid #ffb000; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; text-decoration: none; }
         .download-btn:hover { background: #ffb000; color: #000; }
         .show-more-container { display: flex; justify-content: center; margin-top: 3rem; }
-        .show-more-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: transparent; color: #ffb000; border: 2px solid #ffb000; border-radius: 10px; padding: 1rem 2.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .show-more-btn:hover { color: #000; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255, 176, 0, 0.3); }
+        .show-more-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: transparent; color: #ffb000; border: 2px solid #ffb000; border-radius: 10px; padding: 1rem 2.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .show-more-btn:hover { color: #000; background: #ffb000; }
         @media (max-width: 768px) {
           .recommend-section { padding: 4rem 1.5rem; }
           .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.25rem; }
           .book-info { padding: 1rem; }
           .book-title { font-size: 0.95rem; }
           .book-author { font-size: 0.8rem; }
-          .show-more-btn { padding: 0.875rem 2rem; font-size: 0.9rem; }
         }
       `}</style>
     </section>

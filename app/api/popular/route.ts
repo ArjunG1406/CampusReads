@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+import { NextRequest, NextResponse } from 'next/server';
 
 const popularBooks = [
   { id: '01', title: "Harry Potter and the Philosopher's Stone", tag: 'Fantasy', author: 'J.K. Rowling', image: 'https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=300&h=450&fit=crop', downloadUrl: '/download/harry-potter.pdf' },
@@ -22,11 +21,9 @@ const popularBooks = [
   { id: '18', title: 'The Book Thief', tag: 'Historical', author: 'Markus Zusak', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&h=450&fit=crop', downloadUrl: '/download/book-thief.pdf' },
 ];
 
-// GET /api/popular
-router.get('/', (req, res) => {
-  const { limit } = req.query;
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get('limit');
   const books = limit ? popularBooks.slice(0, parseInt(limit)) : popularBooks;
-  res.json({ count: books.length, books });
-});
-
-module.exports = { router, popularBooks };
+  return NextResponse.json({ count: books.length, books });
+}

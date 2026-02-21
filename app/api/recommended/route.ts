@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+import { NextRequest, NextResponse } from 'next/server';
 
 const recommendedBooks = [
   { id: '01', title: 'Atomic Habits', tag: 'Self-Help', author: 'James Clear', image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop', downloadUrl: '/download/atomic-habits.pdf' },
@@ -16,11 +15,9 @@ const recommendedBooks = [
   { id: '12', title: 'The Body Keeps the Score', tag: 'Psychology', author: 'Bessel van der Kolk', image: 'https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=300&h=450&fit=crop', downloadUrl: '/download/body-keeps-score.pdf' },
 ];
 
-// GET /api/recommended
-router.get('/', (req, res) => {
-  const { limit } = req.query;
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get('limit');
   const books = limit ? recommendedBooks.slice(0, parseInt(limit)) : recommendedBooks;
-  res.json({ count: books.length, books });
-});
-
-module.exports = { router, recommendedBooks };
+  return NextResponse.json({ count: books.length, books });
+}
