@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import SearchBar from "@/Components/search";
 
 type Book = {
   id: string;
@@ -12,6 +13,7 @@ type Book = {
   image?: string;
   tag?: string;
   downloadUrl?: string;
+  download_url?: string;
 };
 
 function SearchResults() {
@@ -33,19 +35,34 @@ function SearchResults() {
     ])
       .then(([books, recommended, popular]) => {
         const q = query.toLowerCase();
+
         const filteredRecommended = (recommended.books || []).filter(
-          (b: Book) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || (b.tag && b.tag.toLowerCase().includes(q))
+          (b: Book) =>
+            b.title.toLowerCase().includes(q) ||
+            b.author.toLowerCase().includes(q) ||
+            (b.tag && b.tag.toLowerCase().includes(q))
         );
+
         const filteredPopular = (popular.books || []).filter(
-          (b: Book) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || (b.tag && b.tag.toLowerCase().includes(q))
+          (b: Book) =>
+            b.title.toLowerCase().includes(q) ||
+            b.author.toLowerCase().includes(q) ||
+            (b.tag && b.tag.toLowerCase().includes(q))
         );
-        const all = [...(books.books || []), ...filteredRecommended, ...filteredPopular];
+
+        const all = [
+          ...(books.books || []),
+          ...filteredRecommended,
+          ...filteredPopular,
+        ];
+
         const seen = new Set();
         const unique = all.filter((b: Book) => {
           if (seen.has(b.title)) return false;
           seen.add(b.title);
           return true;
         });
+
         setResults(unique);
         setSearched(true);
         setLoading(false);
@@ -75,8 +92,8 @@ function SearchResults() {
                   <h3 className="book-title">{book.title}</h3>
                   <p className="book-author">{book.author}</p>
                   {book.price && <p className="book-price">${book.price.toFixed(2)}</p>}
-                  {book.downloadUrl ? (
-                    <a href={book.downloadUrl} className="action-btn" download>
+                  {(book.downloadUrl || book.download_url) ? (
+                    <a href={book.downloadUrl || book.download_url} className="action-btn" download>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M8 12L3 7h3V1h4v6h3l-5 5z" fill="currentColor"/>
                         <path d="M1 14h14v2H1v-2z" fill="currentColor"/>
@@ -106,6 +123,23 @@ function SearchResults() {
   );
 }
 
+function SearchHeader() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
+
+  return (
+    <div className="header-content">
+      <span className="section-tag">SEARCH RESULTS</span>
+      <h1 className="page-title">
+        {query ? `Results for "${query}"` : "Search Books"}
+      </h1>
+      <div className="searchbar-wrapper">
+        <SearchBar />
+      </div>
+    </div>
+  );
+}
+
 export default function SearchPage() {
   return (
     <main className="search-page">
@@ -117,10 +151,9 @@ export default function SearchPage() {
             </svg>
             Back to Home
           </a>
-          <div className="header-content">
-            <span className="section-tag">SEARCH RESULTS</span>
-            <h1 className="page-title">Search Books</h1>
-          </div>
+          <Suspense fallback={<div className="header-content"><span className="section-tag">SEARCH RESULTS</span><h1 className="page-title">Search Books</h1></div>}>
+            <SearchHeader />
+          </Suspense>
         </header>
 
         <Suspense fallback={<p style={{ color: "#9a9a9a" }}>Loading...</p>}>
@@ -138,7 +171,8 @@ export default function SearchPage() {
         .back-link:hover svg { transform: translateX(-4px); }
         .header-content { max-width: 700px; }
         .section-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 1.5px; font-weight: 600; color: #ffb000; margin-bottom: 1rem; }
-        .page-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 1rem; }
+        .page-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 1.5rem; }
+        .searchbar-wrapper { margin-bottom: 1rem; }
         .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
         .book-card { background: #0a0a0a; border: 2px solid #1a1a1a; border-radius: 12px; overflow: hidden; transition: all 0.3s ease; }
         .book-card:hover { border-color: #ffb000; transform: translateY(-8px); box-shadow: 0 20px 40px rgba(255,176,0,0.2); }
